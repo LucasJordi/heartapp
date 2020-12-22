@@ -4,6 +4,7 @@ import { createDrawerNavigator } from '@react-navigation/drawer';
 import { NavigationContainer } from '@react-navigation/native';
 import {Heart} from './telas/heart'
 import {Home} from './telas/home'
+import {Resultados} from './telas/resultados'
 
 
 const Drawer = createDrawerNavigator();
@@ -15,6 +16,7 @@ export default function App() {
         
         <Drawer.Screen name="Home" component={Home} />
         <Drawer.Screen name="Heart" component={Heart} />
+        <Drawer.Screen name="Resultados" component={Resultados} />
         
         
       </Drawer.Navigator>

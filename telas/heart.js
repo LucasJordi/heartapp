@@ -16,17 +16,17 @@ export  function Heart({navigation}) {
   const [modal2,setmodal2]=useState(false)
   const produtorio=[]
   const [fatorepc,setfatorepc]=useState(1)
-  const [contexto,setcontexto]=useState(1)
+  const [contexto,setcontexto]=useState(0.1)
   const [prod,setprod]=useState([])
 
   const confiabH=()=>{
 
     try{
       const a=prod.reduce((accum, curr) => accum * curr )
-      return a*hep
+      return (a*hep)
     }
     catch(e){
-      return 0
+      return ''
     }
   }
   const [epc,setepc]=useState([
@@ -175,8 +175,8 @@ export  function Heart({navigation}) {
               </Text>
               
             </View>
-            <Text>{hep}</Text>
-            <Text>{confiabH()}</Text>
+            <Text>{(hep*100).toFixed(1)+"%"}</Text>
+            <Text>{(confiabH()*100).toFixed(3)+"%"}</Text>
             
             <View >
               <Text>Identifique os EPC's (Error Producing Conditions)</Text>
@@ -188,7 +188,14 @@ export  function Heart({navigation}) {
             <View style={{justifyContent:"center",width:windowWidth*0.8,height:windowHeight*0.6,marginTop:"2%"}}>
               <FlatList
                 data={epcs}
-                
+                ListFooterComponent={
+                  <>
+                    <TouchableOpacity onPress={()=>navigation.navigate("Resultados",{response,quiz})} style={{marginTop:'5%',width:windowWidth*0.8,alignItems:"flex-end"}}>
+                      <Text style={{fontSize:20}}>Avançar</Text>
+                    </TouchableOpacity>
+
+                  </>
+                }
                 keyExtractor={(item)=>item.key}
                 renderItem={({item})=>(
                   <TouchableOpacity onPress={()=>{
@@ -228,7 +235,7 @@ export  function Heart({navigation}) {
                     </Picker>
                     </View>
                     <TouchableOpacity onPress={()=>{
-                      const ppt= (parseFloat(contexto)*(fatorepc-1))+1
+                      const ppt= (parseFloat(contexto)*(parseFloat(fatorepc)-1))+1
                       
                       setprod([...prod,ppt]);
                       setmodal2(!modal2);
