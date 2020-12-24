@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import  React,{useState,useRef,useEffect} from 'react';
-import { Animated,StyleSheet,Dimensions,TouchableOpacity,Modal, Text,FlatList, View } from 'react-native';
+import { Animated,StyleSheet,RefreshControl,Dimensions,TouchableOpacity,Modal, Text,FlatList, View } from 'react-native';
 import {Barra} from './barra'
 import {Picker} from '@react-native-picker/picker';
 export  function Heart({navigation}) {
@@ -18,15 +18,23 @@ export  function Heart({navigation}) {
   const [fatorepc,setfatorepc]=useState(1)
   const [contexto,setcontexto]=useState(0.1)
   const [prod,setprod]=useState([])
+  const [quiz2,setquiz2]=useState([])
+  const [prob,setprob]=useState(0)
 
+  const probabilidade=()=>{
+    setprob(confiabH())
+  }
   const confiabH=()=>{
 
     try{
       const a=prod.reduce((accum, curr) => accum * curr )
+      
       return (a*hep)
     }
     catch(e){
+      
       return ''
+
     }
   }
   const [epc,setepc]=useState([
@@ -111,6 +119,21 @@ export  function Heart({navigation}) {
     
   },[response])
   useEffect(()=>{
+    
+    
+    setresponse([])
+    sethep(0)
+    
+    setquiz2(true)
+    setfatorepc(1)
+    setcontexto(0.1)
+    setprod([])
+
+    try{flatListRef.scrollToIndex({index:0})}catch(e){console.log(e)}
+    
+
+  },[])
+  useEffect(()=>{
     console.log(prod);
   },[prod])
   const scaleon = () => {
@@ -145,7 +168,7 @@ export  function Heart({navigation}) {
     {key:'3',question:'Nível de supervisão',alternatives:['Não existe verificação','Existe presencialmente','Alguma verificação']},
     
     {key:'4',question:'Familiaridade com a tarefa',alternatives:['Baixa','Média','Alta']},
-    {key:'5',question:'Auxilio da automação (Ações e alarmes)',alternatives:['Não existe','Existe ação da automação','Existe alarme a ação da automação']},
+    {key:'5',question:'Auxilio da automação (Ações e alarmes)',alternatives:['Não existe','Existe ação da automação','Existe alarme e ação da automação']},
        
     {key:'6',question:'Tem consciência dos efeitos?',alternatives:['Sim','Não']},
     {key:'7',question:'Complexidade da tarefa',alternatives:['Baixa','Média','Alta']},
@@ -190,7 +213,10 @@ export  function Heart({navigation}) {
                 data={epcs}
                 ListFooterComponent={
                   <>
-                    <TouchableOpacity onPress={()=>navigation.navigate("Resultados",{response,quiz})} style={{marginTop:'5%',width:windowWidth*0.8,alignItems:"flex-end"}}>
+                    <TouchableOpacity onPress={()=>{
+                      
+                      navigation.navigate("Resultados",{response,quiz,hep,prob,confiabH});
+                      }} style={{marginTop:'5%',width:windowWidth*0.8,alignItems:"flex-end"}}>
                       <Text style={{fontSize:20}}>Avançar</Text>
                     </TouchableOpacity>
 
@@ -256,7 +282,7 @@ export  function Heart({navigation}) {
       </Modal>
       <FlatList
         data={quiz}
-        scrollEventThrottle={1}
+        
         scrollEnabled={false}
         initialPage={1}
         onMomentumScrollBegin={()=>scaleon()}
@@ -282,6 +308,7 @@ export  function Heart({navigation}) {
         pagingEnabled
         keyExtractor={(item)=>item.key}
         renderItem={({item})=>(
+          
           <View style={{width:windowWidth,alignItems:'center'}}>
             <Animated.View style={{elevation:12,width:windowWidth*0.95,alignItems:'center',marginTop:10,height:windowHeight-120,backgroundColor:'white',borderRadius:20,transform:[{scale}]}}>
               <View style={{marginTop:'20%',marginBottom:50}}>
