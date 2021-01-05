@@ -1,42 +1,87 @@
 import { StatusBar } from 'expo-status-bar';
 import  React,{useState,useRef,useEffect} from 'react';
-import { Animated,StyleSheet,RefreshControl,Dimensions,TouchableOpacity,Modal, Text,FlatList, View } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
+import { Animated,StyleSheet,FlatList,RefreshControl,Alert,Dimensions,TouchableOpacity,Modal, Text, View } from 'react-native';
 import {Barra} from './barra'
+import {ValidarHep2} from './hep'
 import {Picker} from '@react-native-picker/picker';
+
+const wait = (timeout) => {
+  return new Promise(resolve => {
+    setTimeout(resolve, timeout);
+  });
+}
 export  function Heart({navigation}) {
+  function scroll(){
+    if(refreshing){
+      flatListRef.scrollToIndex({index:0})
+    }
+    
+  };
+  const [refreshing, setRefreshing] = React.useState(false);
+
+  const onRefresh = React.useCallback(() => {
+    setRefreshing(true);
+    
+    console.log(flatListRef)
+    
+    wait(2000).then(() => {
+
+      
+      setRefreshing(false)});
+    
+  }, []);
   const windowWidth = Dimensions.get('window').width;
   const windowHeight = Dimensions.get('window').height;
   const scale = useRef(new Animated.Value(1)).current;
-  const [scroll2,setscroll]=useState(0)
-  const [epcs,setepcs]=useState('')
-  const[flatListRef,setflat]=useState()
-  const [response,setresponse]=useState([])
-  const [hep,sethep]=useState(0)
-  const [modal,setmodal]=useState(false)
-  const [modal2,setmodal2]=useState(false)
-  const produtorio=[]
-  const [fatorepc,setfatorepc]=useState(1)
-  const [contexto,setcontexto]=useState(0.1)
-  const [prod,setprod]=useState([])
-  const [quiz2,setquiz2]=useState([])
-  const [prob,setprob]=useState(0)
+  const [scroll2,setscroll]=useState(0);
+  const [hep,sethep]=useState(0.145);
+  const[flatListRef,setflat]=useState();
+  const [response,setresponse]=useState([]);
+  const [avanc,setavanc]=useState(false);
+  const [modalVisible1, setModalVisible1] = useState(false);
+  
 
-  const probabilidade=()=>{
-    setprob(confiabH())
-  }
-  const confiabH=()=>{
-
-    try{
-      const a=prod.reduce((accum, curr) => accum * curr )
-      
-      return (a*hep)
-    }
-    catch(e){
-      
-      return ''
-
+  const Avancar=()=>{
+    if(avanc){
+      return(
+        <TouchableOpacity onPress={()=>setModalVisible1(!modalVisible1)} styles={{marginVertical:"10%",width:"100%"}}>
+          <Text style={{fontSize:30,marginVertical:"14%",paddingLeft:"55%",justifyContent:"flex-end"}}>Avançar</Text>
+        </TouchableOpacity>
+        
+      )
+    }else{
+      return(
+        <Text style={{opacity:0}}></Text>
+      )
     }
   }
+
+  
+  useEffect((event)=>{
+    
+    const unsubscribe = navigation.addListener('focus',  () => {
+      
+      
+      scroll(flatListRef,1)
+      setavanc(false)
+      onRefresh()
+      setresponse([])
+      sethep(0)
+      
+      
+
+    });
+    
+    return unsubscribe
+  },)
+  useEffect(()=>{
+    console.log(response)
+    ValidarHep2(response,sethep,setepc2,epc)
+    console.log(hep)
+    
+  },[response])
+  const [epc2,setepc2]=useState([])
   const [epc,setepc]=useState([
     {epc:'Não Familiar com a Situação',key:'1',fator:17},
     {epc:'Pouco tempo disponível para recuperação',key:'2',fator:11},
@@ -57,85 +102,7 @@ export  function Heart({navigation}) {
     {epc:'Alocação de funções e responsabilidades não é clara',key:'17',fator:1.6},
   ])
   
-  useEffect(()=>{
-    (
-      ()=>{
-        try{
-          if(response[3]=="Baixa"&&response[5]=="Não"){
-            sethep(0.55);
-            setepcs([epc[12],epc[15]]);
-            setmodal(!modal);
-            
-          }
-          if(response[1]=="Não existe"&&response[2]=="Não existe"&&response[6]=="Alta"){
-            sethep(0.26);
-            setepcs([epc[12],epc[14],epc[15]]);
-            setmodal(!modal)
-          }
-          if(response[0]=="Alta"){
-            sethep(0.16);
-            setepcs([epc[4],epc[8],epc[9],epc[12],epc[15],epc[16]]);
-            
-            setmodal(!modal);
-          }
-          if(response[6]=="Média"&&response[7]=="Baixa"){
-            sethep(0.09);
-            setepcs([epc[6],epc[8],epc[9],epc[10],epc[12],epc[15],epc[16]]);
-            
-            setmodal(!modal)
-          }
-          if(response[0]=="Baixa"&&response[3]=="Média"&&response[6]=="Baixa"){
-            sethep(0.02);
-            setepcs([epc[2],epc[6],epc[8],epc[9],epc[12],epc[13],epc[15],epc[16]]);
-            
-            setmodal(!modal)
-          }
-          if(response[1]=="Difícil utilização"&&response[2]=="Alguma verificação"){
-            sethep(0.003);
-            setepcs([epc[0],epc[5],epc[7],epc[8],epc[10],epc[12],epc[13],epc[14],epc[15],epc[16]]);
-            
-            setmodal(!modal)
-          }
-          if(response[7]=="Alta"&&response[8]=="Com tempo adequado"&&response[9]=="Pessoas altamente treinadas"&&response[10]=="Tem experiência"&&response[11]=="Alta"){
-            sethep(0.0004);
-            setepcs([epc[1],epc[2],epc[3],epc[6],epc[8],epc[9],epc[11],epc[12],epc[2],epc[14]]);
-            
-            setmodal(!modal)
-          }
-          if(response[3]=="Alta"&&response[4]=="Existe ação da automação"){
-            sethep(0.00002);
-            setepcs([epc[1],epc[2],epc[3],epc[6],epc[7],epc[8],epc[9],epc[11],epc[12],epc[13],epc[15],epc[16]]);
-            
-            setmodal(!modal)
-          }
-          
-
-        }catch(e){
-          console.log('erro')
-        }
-      }
-    )();
-    
-    
-  },[response])
-  useEffect(()=>{
-    
-    
-    setresponse([])
-    sethep(0)
-    
-    setquiz2(true)
-    setfatorepc(1)
-    setcontexto(0.1)
-    setprod([])
-
-    try{flatListRef.scrollToIndex({index:0})}catch(e){console.log(e)}
-    
-
-  },[])
-  useEffect(()=>{
-    console.log(prod);
-  },[prod])
+  
   const scaleon = () => {
     // Will change fadeAnim value to 1 in 5 seconds
     Animated.sequence([Animated.timing(scale, {
@@ -162,6 +129,7 @@ export  function Heart({navigation}) {
       useNativeDriver: true
     }).start();
   };
+  
   const [quiz,setquiz]=useState([
     {key:'1',question:'Habilidade requerida',alternatives:['Alta','Média','Baixa']},
     {key:'2',question:'Qualidade dos procedimentos escritos',alternatives:['Não existe','Difícil utilização','Boa qualidade']},
@@ -185,113 +153,93 @@ export  function Heart({navigation}) {
 
   return (
     <View style={styles.container}>
-      <Barra func={()=>navigation.openDrawer()}/>
-      <Modal  
-        animationType="slide"
-        
-        visible={modal}
-      >
-        <View style={{height:windowHeight,width:windowWidth,justifyContent:"flex-start",alignItems:"center"}}>
-            <View style={{borderColor:"black",borderBottomWidth:2,marginBottom:'5%'}}>
-              <Text style={{fontSize:30,marginTop:"10%"}}>
-                HEP
-              </Text>
-              
-            </View>
-            <Text>{(hep*100).toFixed(1)+"%"}</Text>
-            <Text>{(confiabH()*100).toFixed(3)+"%"}</Text>
-            
-            <View >
-              <Text>Identifique os EPC's (Error Producing Conditions)</Text>
-            </View>
-            <TouchableOpacity onPress={()=>setprod([])} style={{borderWidth:2,justifyContent:"center",alignItems:"center",flexDirection:"row",borderColor:"blue",borderRadius:20,marginVertical:"3%",width:100}}>
-                      <Text style={{paddingLeft:"5%",fontSize:20}}>Apagar</Text>
-                    </TouchableOpacity>
-            
-            <View style={{justifyContent:"center",width:windowWidth*0.8,height:windowHeight*0.6,marginTop:"2%"}}>
-              <FlatList
-                data={epcs}
-                ListFooterComponent={
-                  <>
-                    <TouchableOpacity onPress={()=>{
-                      
-                      navigation.navigate("Resultados",{response,quiz,hep,prob,confiabH});
-                      }} style={{marginTop:'5%',width:windowWidth*0.8,alignItems:"flex-end"}}>
-                      <Text style={{fontSize:20}}>Avançar</Text>
-                    </TouchableOpacity>
+      
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={modalVisible1}
+         
+        >
+          
+            <View style={{flex:0.5}}>
 
-                  </>
-                }
-                keyExtractor={(item)=>item.key}
-                renderItem={({item})=>(
-                  <TouchableOpacity onPress={()=>{
-                    setmodal2(!modal2);
-                    setfatorepc(item.fator);
-                    }} style={{borderWidth:2,flexDirection:"row",borderColor:"gray",borderRadius:20,marginVertical:"3%"}}>
-                    <Text style={{paddingLeft:"5%",fontSize:20}}>{item.epc}</Text>
-                  </TouchableOpacity>
-                )}
-              />
-              <Modal
-                animationType="slide"
-                transparent={true}
-                visible={modal2}
+            </View>
+            <View style={{flex:8,backgroundColor:"white",elevation:20,borderRadius:10,width:"100%"}}>
+              <View style={{marginHorizontal:"7%",flex:1}}>
+                <TouchableOpacity  onPress={()=>setModalVisible1(!modalVisible1)}>
+                 <Text style={{fontSize:40,color:"gray"}}>x</Text>
+                </TouchableOpacity>
+                <View style={{marginVertical:"6%",borderBottomWidth:1,borderColor:"black"}}>
+                  <Text style={{fontSize:15,fontWeight:"bold"}}>{"Condições de produção de erros  P(A)="+(hep*100).toFixed((hep.toString().length)*0.5)+"%"}</Text>
+                </View>
                 
-              >
-                <View style={{justifyContent:"center",flex:1,alignItems:"center"}}>
-
-                  <View style={{borderRadius:20,justifyContent:"center",alignItems:"center",width:250,height:250,backgroundColor:"white",shadowColor: "#000",shadowOffset:{width: 0,height: 2},shadowOpacity: 0.25,shadowRadius: 3.84,elevation: 5}}>
-                    <View>
-                    <Picker
-                      selectedValue={contexto}
-                      style={{height: 50, width: 100}}
-                      onValueChange={(itemValue, itemIndex) =>
-                        setcontexto(itemValue)
-                      }>
-                      <Picker.Item label="1" value="0.1" />
-                      <Picker.Item label="2" value="0.2" />
-                      <Picker.Item label="3" value="0.3" />
-                      <Picker.Item label="4" value="0.4" />
-                      <Picker.Item label="5" value="0.5" />
-                      <Picker.Item label="6" value="0.6" />
-                      <Picker.Item label="7" value="0.7" />
-                      <Picker.Item label="8" value="0.8" />
-                      <Picker.Item label="9" value="0.9" />
-                      <Picker.Item label="10" value="1.0" />
-                    </Picker>
-                    </View>
-                    <TouchableOpacity onPress={()=>{
-                      const ppt= (parseFloat(contexto)*(parseFloat(fatorepc)-1))+1
-                      
-                      setprod([...prod,ppt]);
-                      setmodal2(!modal2);
-                      
-                      
-                    }} style={{borderWidth:2,flexDirection:"row",borderColor:"gray",borderRadius:20,marginVertical:"3%",width:"70%"}}>
-                      <Text style={{paddingLeft:"5%",fontSize:20}}>Adicionar</Text>
-                    </TouchableOpacity>
-                  </View>
+              </View>
+              <View style={{flex:4}}>
+                <View style={{borderBottomWidth:1,borderColor:"black",marginBottom:"5%",marginHorizontal:"2%"}}>
+                  <Text style={{marginHorizontal:"5%",fontSize:15}}>Identifique os EPC - Error Producing Conditions </Text>
+              
 
                 </View>
 
-              </Modal>
-            </View>
-            
-        </View>
+                
+                <FlatList 
+                  data={epc}
+                  
+                  keyExtractor={(item,index)=>index}
+                  renderItem={({item})=>(
+                    <TouchableOpacity style={{justifyContent:"center",alignItems:"center",elevation:3,marginVertical:"1%",marginHorizontal:"5%",width:"90%",height:60,backgroundColor:"white"}}>
+                      <Text style={{paddingLeft:"4%",fontSize:15,color:"gray"}}>{item.epc}</Text>
+                    </TouchableOpacity>
 
-      </Modal>
+                  )
+
+                  }
+                
+                />
+
+              </View>
+              <View style={{flex:0.4,alignItems:"flex-end"}}>
+                <TouchableOpacity>
+                  <Text style={{marginHorizontal:"5%",fontSize:30}}>
+                    Avancar
+                  </Text>
+                </TouchableOpacity>
+              </View>
+              
+
+            </View>
+
+          
+          
+        </Modal>
+
+      
+      
+      <Barra func={()=>navigation.openDrawer()}/>
+      <TouchableOpacity onPress={scroll()}>
+        <Text style={{opacity:0,fontSize:30}}>Aperte para voltar</Text>
+      </TouchableOpacity>
       <FlatList
+        
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+        ref={(ref)=>{setflat(ref)}}
         data={quiz}
         
         scrollEnabled={false}
-        initialPage={1}
+        initialScrollIndex={0}
+        getItemLayout={(data, index) => (
+          {length:windowHeight, offset: windowWidth*index, index}
+        )}
         onMomentumScrollBegin={()=>scaleon()}
         horizontal
         onScroll={(event)=>{
+          
           const div=event.nativeEvent.contentOffset.x/event.nativeEvent.layoutMeasurement.width
           const roundIndex = Math.round(div)
           if(roundIndex>=quiz.length-1){
-            setscroll(-1)
+            setscroll('ok')
           }else{
             setscroll(roundIndex)
           }
@@ -304,12 +252,13 @@ export  function Heart({navigation}) {
         }}
         
         
-        ref={(ref)=>{setflat(ref)}}
+        
         pagingEnabled
         keyExtractor={(item)=>item.key}
         renderItem={({item})=>(
           
           <View style={{width:windowWidth,alignItems:'center'}}>
+            
             <Animated.View style={{elevation:12,width:windowWidth*0.95,alignItems:'center',marginTop:10,height:windowHeight-120,backgroundColor:'white',borderRadius:20,transform:[{scale}]}}>
               <View style={{marginTop:'20%',marginBottom:50}}>
                 <Text style={{color:'gray',textAlign:'center',fontSize:25,fontWeight:'200'}}>{item.question}</Text>
@@ -317,7 +266,15 @@ export  function Heart({navigation}) {
               
               <FlatList 
                 data={item.alternatives}
-                
+                ListFooterComponent={
+                  <>
+                  
+                    <Avancar />
+                  
+                    
+                  </>
+                }
+                initialNumToRender={10}
                 keyExtractor={(item)=>item}
                 renderItem={({item,index})=>(
                   <TouchableOpacity onPress={()=>{
@@ -326,7 +283,15 @@ export  function Heart({navigation}) {
                     
 
                     
-                    flatListRef.scrollToIndex({index:scroll2+1});}}  style={{width:windowWidth*0.8,marginVertical:'4%',flexDirection:'row',borderRadius:40,borderWidth:1,height:60,alignItems:'center',backgroundColor:'white'}}>
+                    if(scroll2!='ok')
+                    {flatListRef.scrollToIndex({index:scroll2+1})}else{
+                      console.log("Cabou");
+                      ValidarHep2(response,sethep,setepc2,epc);
+                      setavanc(true);
+                      
+                    }
+                    
+                    }}  style={{width:windowWidth*0.8,marginVertical:'4%',flexDirection:'row',borderRadius:40,borderWidth:1,height:60,alignItems:'center',backgroundColor:'white'}}>
                     <View style={{borderRadius:60,borderWidth:1,width:45,justifyContent:'center',alignItems:'center',height:45,left:5,backgroundColor:'white'}}><Text>{index}</Text></View>
                     <Text style={{marginLeft:"5%",fontSize:20}}>{item}</Text>
                   </TouchableOpacity>
