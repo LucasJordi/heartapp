@@ -1,7 +1,7 @@
 import { StatusBar } from 'expo-status-bar';
 import  React,{useState,useRef,useEffect} from 'react';
 import { useFocusEffect } from '@react-navigation/native';
-import { Animated,StyleSheet,FlatList,RefreshControl,Alert,Dimensions,TouchableOpacity,Modal, Text, View } from 'react-native';
+import { Animated,StyleSheet,ActivityIndicator,FlatList,RefreshControl,Alert,Dimensions,TouchableOpacity,Modal, Text, View } from 'react-native';
 import {Barra} from './barra'
 import {ValidarHep2} from './hep'
 import {Picker} from '@react-native-picker/picker';
@@ -12,6 +12,7 @@ const wait = (timeout) => {
   });
 }
 export  function Heart({navigation}) {
+  const [current,setcurrent]=useState([])
   function scroll(){
     if(refreshing){
       flatListRef.scrollToIndex({index:0})
@@ -40,6 +41,7 @@ export  function Heart({navigation}) {
   const [response,setresponse]=useState([]);
   const [avanc,setavanc]=useState(false);
   const [modalVisible1, setModalVisible1] = useState(false);
+  const [modalVisible2, setModalVisible2] = useState(true);
   
 
   const Avancar=()=>{
@@ -62,12 +64,15 @@ export  function Heart({navigation}) {
     
     const unsubscribe = navigation.addListener('focus',  () => {
       
-      
+      setModalVisible2(true)
       scroll(flatListRef,1)
+      setTimeout(()=>setModalVisible2(false),5000)
+      
       setavanc(false)
       onRefresh()
       setresponse([])
       sethep(0)
+      setcurrent([])
       
       
 
@@ -153,6 +158,16 @@ export  function Heart({navigation}) {
 
   return (
     <View style={styles.container}>
+      <Modal
+        transparent={true}
+        visible={modalVisible2}
+      
+      >
+        <View style={{width:windowWidth,height:windowHeight,opacity:0.3,backgroundColor:"white",justifyContent:"center",alignItems:"center"}}>
+          <ActivityIndicator size="large" color="#00ff00" />
+        </View>
+
+      </Modal>
       
         <Modal
           animationType="slide"
@@ -183,12 +198,25 @@ export  function Heart({navigation}) {
 
                 
                 <FlatList 
-                  data={epc}
+                  data={epc2}
                   
-                  keyExtractor={(item,index)=>index}
-                  renderItem={({item})=>(
-                    <TouchableOpacity style={{justifyContent:"center",alignItems:"center",elevation:3,marginVertical:"1%",marginHorizontal:"5%",width:"90%",height:60,backgroundColor:"white"}}>
-                      <Text style={{paddingLeft:"4%",fontSize:15,color:"gray"}}>{item.epc}</Text>
+                  keyExtractor={(item,index)=>index.toString()}
+                  renderItem={({item,index})=>(
+                    <TouchableOpacity onPress={()=>{
+                    if(current.indexOf(item.key) >-1){
+                      setcurrent((current)=>{
+                        return current.filter(todo => todo != item.key);
+                      })
+
+                    }else{
+                      setcurrent([...current,item.key]);
+
+                    }
+                    
+                    
+                    
+                    }} style={[current.indexOf(item.key)>-1 && {borderColor:"#00ff00ff",borderWidth:3},{justifyContent:"center",alignItems:"center",elevation:3,marginVertical:"1%",marginHorizontal:"5%",width:"90%",height:60,backgroundColor:"white"}]}>
+                      <Text  style={[{paddingLeft:"4%",fontSize:15}, {color:"gray"}]}>{item.epc}</Text>
                     </TouchableOpacity>
 
                   )
@@ -221,14 +249,12 @@ export  function Heart({navigation}) {
       </TouchableOpacity>
       <FlatList
         
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-        }
+        
         ref={(ref)=>{setflat(ref)}}
         data={quiz}
         
         scrollEnabled={false}
-        initialScrollIndex={0}
+        
         getItemLayout={(data, index) => (
           {length:windowHeight, offset: windowWidth*index, index}
         )}
