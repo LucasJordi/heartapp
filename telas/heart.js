@@ -33,6 +33,7 @@ export  function Heart({navigation}) {
     
   }, []);
   const windowWidth = Dimensions.get('window').width;
+  const [marc,setmarc]=useState(0)
   const windowHeight = Dimensions.get('window').height;
   const scale = useRef(new Animated.Value(1)).current;
   const [scroll2,setscroll]=useState(0);
@@ -65,7 +66,7 @@ export  function Heart({navigation}) {
     const unsubscribe = navigation.addListener('focus',  () => {
       
       setModalVisible2(true)
-      scroll(flatListRef,1)
+      
       setTimeout(()=>setModalVisible2(false),5000)
       
       setavanc(false)
@@ -86,7 +87,18 @@ export  function Heart({navigation}) {
     console.log(hep)
     
   },[response])
+  const produtorio=()=>{
+    let total=1
+    newepc.forEach(element => {
+      total=total*((element.escolha*(element.fator-1))+1)
+      console.log((element.escolha*(element.fator-1))+1)
+      
+    });
+    console.log(total)
+    
+  }
   const [epc2,setepc2]=useState([])
+  const [newepc,setnewepc]=useState(epc)
   const [epc,setepc]=useState([
     {epc:'Não Familiar com a Situação',key:'1',fator:17},
     {epc:'Pouco tempo disponível para recuperação',key:'2',fator:11},
@@ -202,6 +214,7 @@ export  function Heart({navigation}) {
                   
                   keyExtractor={(item,index)=>index.toString()}
                   renderItem={({item,index})=>(
+                    <View style={{alignItems:"center"}}>
                     <TouchableOpacity onPress={()=>{
                     if(current.indexOf(item.key) >-1){
                       setcurrent((current)=>{
@@ -210,6 +223,7 @@ export  function Heart({navigation}) {
 
                     }else{
                       setcurrent([...current,item.key]);
+                      item.escolha="0.1";
 
                     }
                     
@@ -217,7 +231,43 @@ export  function Heart({navigation}) {
                     
                     }} style={[current.indexOf(item.key)>-1 && {borderColor:"#00ff00ff",borderWidth:3},{justifyContent:"center",alignItems:"center",elevation:3,marginVertical:"1%",marginHorizontal:"5%",width:"90%",height:60,backgroundColor:"white"}]}>
                       <Text  style={[{paddingLeft:"4%",fontSize:15}, {color:"gray"}]}>{item.epc}</Text>
+                      
                     </TouchableOpacity>
+                      {current.indexOf(item.key)>-1 ? 
+                        <View>
+                          <Text>Selecione o fator de correção</Text>
+                          <Picker
+                              
+                              selectedValue={item.escolha? item.escolha: "0.1"}
+                              style={{color:"black",height: 50, width: 100,}}
+                              onValueChange={(itemValue) =>{
+                                item.escolha=itemValue;
+                                setmarc(itemValue)
+                                console.log(epc2);
+                                
+                                
+                              }
+                              
+                            }
+                              
+                            >
+                            <Picker.Item  label="1" value="0.1" />
+                            <Picker.Item label="2" value="0.2" />
+                            <Picker.Item label="3" value="0.3" />
+                            <Picker.Item label="4" value="0.4" />
+                            <Picker.Item label="5" value="0.5" />
+                            <Picker.Item label="6" value="0.6" />
+                            <Picker.Item label="7" value="0.7" />
+                            <Picker.Item label="8" value="0.8" />
+                            <Picker.Item label="9" value="0.9" />
+                            <Picker.Item label="10" value="1" />
+                          </Picker>
+                        </View>
+
+                        : null
+                      }
+                    </View>
+                    
 
                   )
 
@@ -227,7 +277,14 @@ export  function Heart({navigation}) {
 
               </View>
               <View style={{flex:0.4,alignItems:"flex-end"}}>
-                <TouchableOpacity>
+                <TouchableOpacity onPress={()=> {
+                    const a=epc2.filter((a)=>current.includes(a.key));
+                    setnewepc(a);
+
+                    console.log(newepc);
+                    produtorio();
+                  }
+                }>
                   <Text style={{marginHorizontal:"5%",fontSize:30}}>
                     Avancar
                   </Text>
