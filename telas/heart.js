@@ -40,6 +40,7 @@ export  function Heart({navigation}) {
   const [hep,sethep]=useState(0.145);
   const[flatListRef,setflat]=useState();
   const [response,setresponse]=useState([]);
+  const [pproduct,setpproduct]=useState();
   const [avanc,setavanc]=useState(false);
   const [modalVisible1, setModalVisible1] = useState(false);
   const [modalVisible2, setModalVisible2] = useState(true);
@@ -67,13 +68,18 @@ export  function Heart({navigation}) {
       
       setModalVisible2(true)
       
-      setTimeout(()=>setModalVisible2(false),5000)
+      setTimeout(()=>{
+        setModalVisible2(false);
+        setavanc(false);
+        onRefresh();
+        setresponse([]);
+        sethep(0);
+        setcurrent([]);
+
+
+      },5000)
       
-      setavanc(false)
-      onRefresh()
-      setresponse([])
-      sethep(0)
-      setcurrent([])
+      
       
       
 
@@ -87,18 +93,22 @@ export  function Heart({navigation}) {
     console.log(hep)
     
   },[response])
-  const produtorio=()=>{
+  const produtorio=  ()=>{
     let total=1
-    newepc.forEach(element => {
+     try{newepc.forEach(element => {
       total=total*((element.escolha*(element.fator-1))+1)
       console.log((element.escolha*(element.fator-1))+1)
       
     });
     console.log(total)
+   }catch(e){
+     console.log(e)
+   }
+    
     
   }
   const [epc2,setepc2]=useState([])
-  const [newepc,setnewepc]=useState(epc)
+  const [newepc,setnewepc]=useState([])
   const [epc,setepc]=useState([
     {epc:'Não Familiar com a Situação',key:'1',fator:17},
     {epc:'Pouco tempo disponível para recuperação',key:'2',fator:11},
@@ -224,6 +234,7 @@ export  function Heart({navigation}) {
                     }else{
                       setcurrent([...current,item.key]);
                       item.escolha="0.1";
+                      
 
                     }
                     
@@ -279,10 +290,12 @@ export  function Heart({navigation}) {
               <View style={{flex:0.4,alignItems:"flex-end"}}>
                 <TouchableOpacity onPress={()=> {
                     const a=epc2.filter((a)=>current.includes(a.key));
-                    setnewepc(a);
+                    setnewepc(epc2.filter((a)=>current.includes(a.key)));
 
                     console.log(newepc);
-                    produtorio();
+                    setModalVisible1(!modalVisible1);
+                    navigation.navigate('Resultados',{newepc,quiz,response,hep,epc2});
+                    
                   }
                 }>
                   <Text style={{marginHorizontal:"5%",fontSize:30}}>
@@ -312,9 +325,7 @@ export  function Heart({navigation}) {
         
         scrollEnabled={false}
         
-        getItemLayout={(data, index) => (
-          {length:windowHeight, offset: windowWidth*index, index}
-        )}
+        
         onMomentumScrollBegin={()=>scaleon()}
         horizontal
         onScroll={(event)=>{
