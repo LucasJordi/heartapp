@@ -12,6 +12,12 @@ const wait = (timeout) => {
   });
 }
 export  function Heart({navigation}) {
+  const tela =(event)=>{
+          
+    const div=event.nativeEvent.contentOffset.x/event.nativeEvent.layoutMeasurement.width
+    const roundIndex = Math.round(div)
+    console.log(roundIndex)
+  }
   const [current,setcurrent]=useState([])
   function scroll(){
     if(refreshing){
@@ -37,7 +43,7 @@ export  function Heart({navigation}) {
   const windowHeight = Dimensions.get('window').height;
   const scale = useRef(new Animated.Value(1)).current;
   const [scroll2,setscroll]=useState(0);
-  const [hep,sethep]=useState(0.145);
+  const [hep,sethep]=useState(0);
   const[flatListRef,setflat]=useState();
   const [response,setresponse]=useState([]);
   const [pproduct,setpproduct]=useState();
@@ -294,7 +300,7 @@ export  function Heart({navigation}) {
 
                     console.log(newepc);
                     setModalVisible1(!modalVisible1);
-                    navigation.navigate('Resultados',{newepc,quiz,response,hep,epc2});
+                    navigation.navigate('Resultados',{newepc,quiz,response,hep,epc2,current});
                     
                   }
                 }>
@@ -333,9 +339,10 @@ export  function Heart({navigation}) {
           const div=event.nativeEvent.contentOffset.x/event.nativeEvent.layoutMeasurement.width
           const roundIndex = Math.round(div)
           if(roundIndex>=quiz.length-1){
-            setscroll('ok')
+            setscroll(11)
           }else{
             setscroll(roundIndex)
+            
           }
           
           
@@ -360,6 +367,15 @@ export  function Heart({navigation}) {
               
               <FlatList 
                 data={item.alternatives}
+                ListHeaderComponent={
+                  <>
+                    <TouchableOpacity onPress={()=>console.log(scroll2)} >
+                      <Text>
+                        Ok
+                      </Text>
+                    </TouchableOpacity>
+                  </>
+                }
                 ListFooterComponent={
                   <>
                   
@@ -374,10 +390,11 @@ export  function Heart({navigation}) {
                   <TouchableOpacity onPress={()=>{
                     scaleon();
                     setresponse([...response,item]);
+                    quiz[scroll2].resposta=item
                     
 
                     
-                    if(scroll2!='ok')
+                    if(scroll2!=11)
                     {flatListRef.scrollToIndex({index:scroll2+1})}else{
                       console.log("Cabou");
                       ValidarHep2(response,sethep,setepc2,epc);
