@@ -5,7 +5,9 @@ import { Animated,StyleSheet,ActivityIndicator,FlatList,RefreshControl,Alert,Dim
 import {Barra} from './barra'
 import {ValidarHep2} from './hep'
 import {Picker} from '@react-native-picker/picker';
-
+import { TextInput } from 'react-native-gesture-handler';
+const windowWidth = Dimensions.get('window').width;
+const windowHeight = Dimensions.get('window').height;
 const wait = (timeout) => {
   return new Promise(resolve => {
     setTimeout(resolve, timeout);
@@ -38,15 +40,17 @@ export  function Heart({navigation}) {
       setRefreshing(false)});
     
   }, []);
-  const windowWidth = Dimensions.get('window').width;
+  
   const [marc,setmarc]=useState(0)
-  const windowHeight = Dimensions.get('window').height;
+  
   const scale = useRef(new Animated.Value(1)).current;
   const [scroll2,setscroll]=useState(0);
   const [hep,sethep]=useState(0);
   const[flatListRef,setflat]=useState();
   const [response,setresponse]=useState([]);
   const [pproduct,setpproduct]=useState();
+  const [func,setFunc]=useState();
+  const [tarefa,setTarefa]=useState();
   const [avanc,setavanc]=useState(false);
   const [modalVisible1, setModalVisible1] = useState(false);
   const [modalVisible2, setModalVisible2] = useState(true);
@@ -75,7 +79,7 @@ export  function Heart({navigation}) {
       setModalVisible2(true)
       
       setTimeout(()=>{
-        setModalVisible2(false);
+        
         setavanc(false);
         onRefresh();
         setresponse([]);
@@ -191,10 +195,43 @@ export  function Heart({navigation}) {
         visible={modalVisible2}
       
       >
-        <View style={{width:windowWidth,height:windowHeight,opacity:0.3,backgroundColor:"white",justifyContent:"center",alignItems:"center"}}>
-          <ActivityIndicator size="large" color="#00ff00" />
+        <View style={{flex:1,opacity:0.7,backgroundColor:"white"}}>
+          
         </View>
+        <View style={{flex:3,alignItems:"center",elevation:90,borderRadius:20,justifyContent:"flex-start",backgroundColor:"white"}}>
+          <View style={[{marginTop:"10%"},styles.modalView]}>
+            <View >
+              <Text style={styles.modalStyleText}>
+                Tarefa
+              </Text>
+            </View>
+            <View>
+              <TextInput onChangeText={(val)=>setTarefa(val)} style={styles.modalStyleInput}/>
+            </View>
+            
+          </View>
+          <View style={styles.modalView}>
+            <View >
+              <Text style={styles.modalStyleText}>
+                Função
+              </Text>
+            </View>
+            <View>
+              <TextInput onChangeText={(val)=>setFunc(val)} style={styles.modalStyleInput}/>
+            </View>
+          </View>
+          <View style={{flex:5,justifyContent:"flex-end",alignItems:"center",flexDirection:"row"}}>
+            
+            
+            <TouchableOpacity onPress={()=>setModalVisible2(false)} style={{flex:1,marginHorizontal:"10%"}}>
+              <Text style={[{color:"gray"},styles.modalStyleText]} >
+                Avançar
+              </Text>
+            </TouchableOpacity>
 
+          </View>
+
+        </View>
       </Modal>
       
         <Modal
@@ -300,7 +337,7 @@ export  function Heart({navigation}) {
 
                     console.log(newepc);
                     setModalVisible1(!modalVisible1);
-                    navigation.navigate('Resultados',{newepc,quiz,response,hep,epc2,current});
+                    navigation.navigate('Resultados',{newepc,quiz,func,tarefa,response,hep,epc2,current});
                     
                   }
                 }>
@@ -329,7 +366,7 @@ export  function Heart({navigation}) {
         ref={(ref)=>{setflat(ref)}}
         data={quiz}
         
-        scrollEnabled={false}
+        scrollEnabled={true}
         
         
         onMomentumScrollBegin={()=>scaleon()}
@@ -369,11 +406,7 @@ export  function Heart({navigation}) {
                 data={item.alternatives}
                 ListHeaderComponent={
                   <>
-                    <TouchableOpacity onPress={()=>console.log(scroll2)} >
-                      <Text>
-                        Ok
-                      </Text>
-                    </TouchableOpacity>
+                    
                   </>
                 }
                 ListFooterComponent={
@@ -402,7 +435,7 @@ export  function Heart({navigation}) {
                       
                     }
                     
-                    }}  style={{width:windowWidth*0.8,marginVertical:'4%',flexDirection:'row',borderRadius:40,borderWidth:1,height:60,alignItems:'center',backgroundColor:'white'}}>
+                    }}  style={[item==quiz[scroll2].resposta? {borderColor:"#00ff00ff",borderWidth:3} : {borderColor:"black",borderWidth:1},{width:windowWidth*0.8,marginVertical:'4%',flexDirection:'row',borderRadius:40,height:60,alignItems:'center',backgroundColor:'white'}]}>
                     <View style={{borderRadius:60,borderWidth:1,width:45,justifyContent:'center',alignItems:'center',height:45,left:5,backgroundColor:'white'}}><Text>{index}</Text></View>
                     <Text style={{marginLeft:"5%",fontSize:20}}>{item}</Text>
                   </TouchableOpacity>
@@ -430,4 +463,24 @@ const styles = StyleSheet.create({
     width:Dimensions.get('window').width,
     height:Dimensions.get('window').height
   },
+  modalStyleText:{
+    fontSize:30,
+    fontWeight:"bold",
+    color:"gray",
+   
+  },
+  modalStyleInput:{
+    borderWidth:2,
+    borderColor:"gray",
+    width:windowWidth*0.7,
+    borderRadius:20,
+    fontSize:20,
+    paddingLeft:20,
+    height:50
+
+  },
+  modalView:{
+    marginVertical:"5%",
+    flex:2
+  }
 });
