@@ -5,20 +5,20 @@ import { NavigationContainer } from '@react-navigation/native';
 import {Heart} from './telas/heart'
 import {Home} from './telas/home'
 import {Resultados} from './telas/resultados'
-
+import {CustomDrawerContent} from './constants/drawer/drawer'
 
 const Drawer = createDrawerNavigator();
 
 export default function App() {
   return (
     <NavigationContainer>
-      <Drawer.Navigator initialRouteName="Home">
-        
+      <Drawer.Navigator initialRouteName="Home" drawerContent={props => <CustomDrawerContent {...props} />}>
+
         <Drawer.Screen name="Home" component={Home} />
         <Drawer.Screen name="Heart" component={Heart} />
         <Drawer.Screen name="Resultados" component={Resultados} />
-        
-        
+
+
       </Drawer.Navigator>
     </NavigationContainer>
   );
