@@ -28,7 +28,7 @@ export  function Barra({navigation,func}) {
   }
   return (
     
-    <View style={{backgroundColor:'#12283d',width:windowWidth,justifyContent:'center',height:100,borderBottomRightRadius:2,borderBottomLeftRadius:2}}>
+    <View style={{backgroundColor:'#12283deb',width:windowWidth,justifyContent:'center',height:100,borderBottomRightRadius:20,borderBottomLeftRadius:20}}>
       <TouchableOpacity onPress={()=>{
         
         marg();

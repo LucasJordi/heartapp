@@ -1,7 +1,7 @@
 import { StatusBar } from 'expo-status-bar';
 import  React,{useState,useRef,useEffect} from 'react';
 import { useFocusEffect } from '@react-navigation/native';
-import { Animated,StyleSheet,ActivityIndicator,FlatList,RefreshControl,Alert,Dimensions,TouchableOpacity,Modal, Text, View } from 'react-native';
+import { Animated,StyleSheet,ActivityIndicator,FlatList,RefreshControl,Alert,Dimensions,TouchableOpacity,TouchableHighlight,Modal, Text, View } from 'react-native';
 import {Barra} from './barra'
 import {ValidarHep2} from './hep'
 import {Picker} from '@react-native-picker/picker';
@@ -49,8 +49,8 @@ export  function Heart({navigation}) {
   const[flatListRef,setflat]=useState();
   const [response,setresponse]=useState([]);
   const [pproduct,setpproduct]=useState();
-  const [func,setFunc]=useState();
-  const [tarefa,setTarefa]=useState();
+  const [func,setFunc]=useState('');
+  const [tarefa,setTarefa]=useState('');
   const [avanc,setavanc]=useState(false);
   const [modalVisible1, setModalVisible1] = useState(false);
   const [modalVisible2, setModalVisible2] = useState(true);
@@ -59,9 +59,11 @@ export  function Heart({navigation}) {
   const Avancar=()=>{
     if(avanc){
       return(
-        <TouchableOpacity onPress={()=>setModalVisible1(!modalVisible1)} styles={{marginVertical:"10%",width:"100%"}}>
-          <Text style={{fontSize:30,marginVertical:"14%",paddingLeft:"55%",justifyContent:"flex-end"}}>Avançar</Text>
+        <TouchableOpacity onPress={()=>setModalVisible1(!modalVisible1)} style={styles.buttom1}>
+          <Text style={{fontSize:30,justifyContent:"flex-end",color:"white",fontWeight:"bold"}}>Avançar</Text>
         </TouchableOpacity>
+
+        
         
       )
     }else{
@@ -78,6 +80,8 @@ export  function Heart({navigation}) {
       
       setModalVisible2(true)
       
+      
+      
       setTimeout(()=>{
         
         setavanc(false);
@@ -87,8 +91,31 @@ export  function Heart({navigation}) {
         setcurrent([]);
 
 
-      },5000)
+      },1000)
       
+
+      
+      
+      setquiz([
+        {key:'1',question:'Habilidade requerida',alternatives:['Alta','Média','Baixa']},
+        {key:'2',question:'Qualidade dos procedimentos escritos',alternatives:['Não existe','Difícil utilização','Boa qualidade']},
+        {key:'3',question:'Nível de supervisão',alternatives:['Não existe verificação','Existe presencialmente','Alguma verificação']},
+        
+        {key:'4',question:'Familiaridade com a tarefa',alternatives:['Baixa','Média','Alta']},
+        {key:'5',question:'Auxilio da automação (Ações e alarmes)',alternatives:['Não existe','Existe ação da automação','Existe alarme e ação da automação']},
+           
+        {key:'6',question:'Tem consciência dos efeitos?',alternatives:['Sim','Não']},
+        {key:'7',question:'Complexidade da tarefa',alternatives:['Baixa','Média','Alta']},
+        {key:'8',question:'Nível de concentração exigida na tarefa',alternatives:['Alta','Média','Baixa']},
+        {key:'9',question:'Adequação da tarefa ao ser humano',alternatives:['Inadequado','Com tempo adequado','Com tempo e distribuição adequados']},
+        {key:'10',question:'Treinamento (Pessoas)',alternatives:['Altamente treinadas','Com algum treinamento','Sem treinamento']},
+        {key:'11',question:'Experiência',alternatives:['Tem experiência','Não tem experiência']},
+        {key:'12',question:'Motivação',alternatives:['Alta','Média','Baixa']},
+        
+        
+        
+        
+      ])
       
       
       
@@ -96,7 +123,7 @@ export  function Heart({navigation}) {
     });
     
     return unsubscribe
-  },)
+  },[navigation])
   useEffect(()=>{
     console.log(response)
     ValidarHep2(response,sethep,setepc2,epc)
@@ -190,45 +217,52 @@ export  function Heart({navigation}) {
 
   return (
     <View style={styles.container}>
+      
       <Modal
         transparent={true}
         visible={modalVisible2}
       
       >
-        <View style={{flex:1,opacity:0.7,backgroundColor:"white"}}>
+        <View style={{flex:1,opacity:0.6,backgroundColor:"white",elevation:4}}>
           
         </View>
-        <View style={{flex:3,alignItems:"center",elevation:90,borderRadius:20,justifyContent:"flex-start",backgroundColor:"white"}}>
-          <View style={[{marginTop:"10%"},styles.modalView]}>
-            <View >
-              <Text style={styles.modalStyleText}>
-                Tarefa
-              </Text>
+        <View style={{flex:1,alignItems:"center",elevation:90,borderRadius:20,justifyContent:"flex-start",backgroundColor:"white"}}>
+            
+          <View style={{marginVertical:"5%"}}>
+            <View>
+              <View>
+                <Text style={styles.modalStyleText}>
+                  Tarefa
+                </Text>
+              </View>
+              <View>
+                <TextInput onChangeText={(val)=>setTarefa(val)} style={styles.modalStyleInput} />
+              </View>
+
             </View>
             <View>
-              <TextInput onChangeText={(val)=>setTarefa(val)} style={styles.modalStyleInput}/>
-            </View>
+              <View>
+                <Text style={styles.modalStyleText}>
+                  Função
+                </Text>
+              </View>
+              <View>
+                <TextInput onChangeText={(val)=>setFunc(val)} style={styles.modalStyleInput} />
+              </View>
             
-          </View>
-          <View style={styles.modalView}>
-            <View >
-              <Text style={styles.modalStyleText}>
-                Função
-              </Text>
-            </View>
-            <View>
-              <TextInput onChangeText={(val)=>setFunc(val)} style={styles.modalStyleInput}/>
-            </View>
-          </View>
-          <View style={{flex:5,justifyContent:"flex-end",alignItems:"center",flexDirection:"row"}}>
+            </View>            
+          </View>  
             
-            
-            <TouchableOpacity onPress={()=>setModalVisible2(false)} style={{flex:1,marginHorizontal:"10%"}}>
-              <Text style={[{color:"gray"},styles.modalStyleText]} >
+          <View>
+            <TouchableOpacity onPress={()=>{
+              tarefa==''||func=='' ? Alert.alert("Preencha todos os dados!"):
+              setModalVisible2(false)
+              
+              }} style={styles.buttom}>
+              <Text style={[{color:"white",fontSize:35}]} >
                 Avançar
               </Text>
             </TouchableOpacity>
-
           </View>
 
         </View>
@@ -330,8 +364,8 @@ export  function Heart({navigation}) {
                 />
 
               </View>
-              <View style={{flex:0.4,alignItems:"flex-end"}}>
-                <TouchableOpacity onPress={()=> {
+              <View style={{flex:0.4,alignItems:"flex-end",marginBottom:'5%',marginEnd:"5%"}}>
+                <TouchableOpacity style={styles.buttom1} onPress={()=> {
                     const a=epc2.filter((a)=>current.includes(a.key));
                     setnewepc(epc2.filter((a)=>current.includes(a.key)));
 
@@ -341,8 +375,9 @@ export  function Heart({navigation}) {
                     
                   }
                 }>
-                  <Text style={{marginHorizontal:"5%",fontSize:30}}>
-                    Avancar
+                  
+                  <Text style={{marginHorizontal:"5%",fontSize:30,color:"white",fontWeight:"bold"}}>
+                    Avançar
                   </Text>
                 </TouchableOpacity>
               </View>
@@ -357,9 +392,15 @@ export  function Heart({navigation}) {
       
       
       <Barra func={()=>navigation.openDrawer()}/>
-      <TouchableOpacity onPress={scroll()}>
-        <Text style={{opacity:0,fontSize:30}}>Aperte para voltar</Text>
+      <TouchableOpacity onPress={scroll()} style={{flex:0.5,flexDirection:"row",justifyContent:"space-between",marginBottom:"3%",alignItems:"stretch"}}>
+        <View>
+          <Text style={{fontSize:20,fontWeight:"bold"}}>{'Tarefa: '+tarefa+'   -   '}</Text>
+        </View>
+        <View>
+          <Text style={{fontSize:20,fontWeight:"bold"}}>{'Função: '+func}</Text>
+        </View>
       </TouchableOpacity>
+      <View style={{flex:10}}>
       <FlatList
         
         
@@ -411,8 +452,15 @@ export  function Heart({navigation}) {
                 }
                 ListFooterComponent={
                   <>
-                  
-                    <Avancar />
+                    <View style={{justifyContent:"flex-end",flex:1}}>
+                      <View style={{flex:1}}>
+                        <Text>*Para voltar, arraste para o lado</Text>
+                      </View>
+                      <Avancar />
+                    </View>
+                    
+                    
+                    
                   
                     
                   </>
@@ -420,12 +468,15 @@ export  function Heart({navigation}) {
                 initialNumToRender={10}
                 keyExtractor={(item)=>item}
                 renderItem={({item,index})=>(
-                  <TouchableOpacity onPress={()=>{
+                  <TouchableOpacity  onPress={(val)=>{
                     scaleon();
                     setresponse([...response,item]);
-                    quiz[scroll2].resposta=item
+                    quiz[scroll2].resposta=item;
                     
 
+                    console.log(Object.keys(val.currentTarget.viewConfig.validAttributes.borderColor))
+                    console.log(val.currentTarget.viewConfig.validAttributes.borderColor)
+                    
                     
                     if(scroll2!=11)
                     {flatListRef.scrollToIndex({index:scroll2+1})}else{
@@ -435,7 +486,7 @@ export  function Heart({navigation}) {
                       
                     }
                     
-                    }}  style={[item==quiz[scroll2].resposta? {borderColor:"#00ff00ff",borderWidth:3} : {borderColor:"black",borderWidth:1},{width:windowWidth*0.8,marginVertical:'4%',flexDirection:'row',borderRadius:40,height:60,alignItems:'center',backgroundColor:'white'}]}>
+                    }}  style={[quiz[scroll2].resposta==item? {borderColor:"#00ff00ff",borderWidth:3} :{borderColor:"black",borderWidth:1},{width:windowWidth*0.8,marginVertical:'4%',flexDirection:'row',borderRadius:40,height:60,alignItems:'center',backgroundColor:'white'}]}>
                     <View style={{borderRadius:60,borderWidth:1,width:45,justifyContent:'center',alignItems:'center',height:45,left:5,backgroundColor:'white'}}><Text>{index}</Text></View>
                     <Text style={{marginLeft:"5%",fontSize:20}}>{item}</Text>
                   </TouchableOpacity>
@@ -449,6 +500,7 @@ export  function Heart({navigation}) {
         )}
       
       />
+      </View>
       <StatusBar style="auto" />
     </View>
   );
@@ -476,11 +528,33 @@ const styles = StyleSheet.create({
     borderRadius:20,
     fontSize:20,
     paddingLeft:20,
-    height:50
+    height:50,
+
 
   },
   modalView:{
-    marginVertical:"5%",
-    flex:2
+    marginVertical:"6%",
+    flex:1
+  },
+  buttom:{
+    marginHorizontal:"10%",
+    borderRadius:10,
+    width:200,
+    height:50,
+    backgroundColor:"#3f4b79ff",
+    justifyContent:"center",
+    alignItems:"center"
+  },
+  buttom1:{
+    
+    
+    backgroundColor:"#3f4b79ff",
+    justifyContent:"center",
+    alignItems:"center",
+    flex:1,
+    borderRadius:10,
+    height:50
+
+   
   }
 });

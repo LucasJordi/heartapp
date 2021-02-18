@@ -9,14 +9,14 @@ export function CustomDrawerContent({props,navigation}) {
 
     return (
       <DrawerContentScrollView {...props}>
-        <View style={{marginLeft:"5%",marginVertical:"5%"}}>
-          <TouchableOpacity style={styles1.menu}>
+        <View style={{marginLeft:"5%",marginVertical:"5%"}}> 
+          <TouchableOpacity onPress={()=>navigation.navigate('Home')} style={styles1.menu}>
 
 
             <Text style={styles1.text}>Home</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles1.menu}>
-            
+          <TouchableOpacity onPress={()=>navigation.navigate('Heart')} style={styles1.menu}>
+
             <Text style={styles1.text}>Consulta</Text>
           </TouchableOpacity>
 
