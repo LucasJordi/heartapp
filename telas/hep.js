@@ -88,6 +88,10 @@ export const ValidarHep2=(response,sethep,setepc2,epc)=>{
         if (response[3]=="Alta"&&response[4]=="Existe ação da automação"){
         sethep(0.00002);
         setepc2([epc[1],epc[2],epc[3],epc[6],epc[7],epc[8],epc[9],epc[11],epc[12],epc[13],epc[15],epc[16]]);
+      }else{
+        sethep(0.00002);
+        setepc2([epc[1],epc[2],epc[3],epc[6],epc[7],epc[8],epc[9],epc[11],epc[12],epc[13],epc[15],epc[16]]);
+
       }
          
     

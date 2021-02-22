@@ -223,9 +223,9 @@ export  function Heart({navigation}) {
         visible={modalVisible2}
       
       >
-        <View style={{flex:1,opacity:0.6,backgroundColor:"white",elevation:4}}>
+        <TouchableOpacity onPress={()=>Alert.alert("Voltar para a tela inicial?",'',[{text:"Sim",onPress:()=>navigation.navigate("Home")},{text:"Cancelar"}])} style={{flex:1,opacity:0.6,backgroundColor:"white",elevation:4}}>
           
-        </View>
+        </TouchableOpacity>
         <View style={{flex:1,alignItems:"center",elevation:90,borderRadius:20,justifyContent:"flex-start",backgroundColor:"white"}}>
             
           <View style={{marginVertical:"5%"}}>
@@ -392,9 +392,9 @@ export  function Heart({navigation}) {
       
       
       <Barra func={()=>navigation.openDrawer()}/>
-      <TouchableOpacity onPress={scroll()} style={{flex:0.5,flexDirection:"row",justifyContent:"space-between",marginBottom:"3%",alignItems:"stretch"}}>
+      <TouchableOpacity onPress={scroll()} style={{flex:0.5,justifyContent:"center",alignItems:"center",marginVertical:"3%",alignItems:"stretch"}}>
         <View>
-          <Text style={{fontSize:20,fontWeight:"bold"}}>{'Tarefa: '+tarefa+'   -   '}</Text>
+          <Text style={{fontSize:20,fontWeight:"bold"}}>{'Tarefa: '+tarefa}</Text>
         </View>
         <View>
           <Text style={{fontSize:20,fontWeight:"bold"}}>{'Função: '+func}</Text>
