@@ -96,7 +96,7 @@ export  function Heart({navigation}) {
 
       
       
-      setquiz([
+      setquizb([
         {key:'1',question:'Habilidade requerida',alternatives:['Alta','Média','Baixa']},
         {key:'2',question:'Qualidade dos procedimentos escritos',alternatives:['Não existe','Difícil utilização','Boa qualidade']},
         {key:'3',question:'Nível de supervisão',alternatives:['Não existe verificação','Existe presencialmente','Alguma verificação']},
@@ -194,7 +194,7 @@ export  function Heart({navigation}) {
     }).start();
   };
   
-  const [quiz,setquiz]=useState([
+  const [quizb,setquizb]=useState([
     {key:'1',question:'Habilidade requerida',alternatives:['Alta','Média','Baixa']},
     {key:'2',question:'Qualidade dos procedimentos escritos',alternatives:['Não existe','Difícil utilização','Boa qualidade']},
     {key:'3',question:'Nível de supervisão',alternatives:['Não existe verificação','Existe presencialmente','Alguma verificação']},
@@ -215,6 +215,7 @@ export  function Heart({navigation}) {
     
   ])
 
+  const [quiz,setquiz]=useState([quizb[1],quizb[2],quizb[3],quizb[4],quizb[5],quizb[6],quizb[7],quizb[0],quizb[8],quizb[9],quizb[10],quizb[11]])
   return (
     <View style={styles.container}>
       
